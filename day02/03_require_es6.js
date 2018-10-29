@@ -1,0 +1,5 @@
+let People = require('./test/People_es6')
+let people = new People('张三','男','12')
+people.sayHello()
+let people2 = new People('李四','女','20')
+people2.sayHello()
