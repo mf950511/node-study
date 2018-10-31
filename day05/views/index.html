@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>小小留言板</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/vue.min.js"></script>
+  <script src="/js/axios.min.js"></script>
+</head>
+<body>
+  <div class="container" id="message-board">
+    <h1 class="text-center">我是留言本</h1>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-3 control-label">姓名</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control"  placeholder="请输入姓名" v-model="name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword3" class="col-sm-3 control-label">留言</label>
+        <div class="col-sm-6">
+            <textarea class="form-control" rows="3" placeholder="请输入留言" v-model="message"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-6">
+            <button type="button" class="btn btn-success" @click="submit">提交</button>
+        </div>
+      </div>
+      <nav aria-label="..." class="col-sm-offset-3 col-sm-6" style="paddingLeft: 0">
+        <ul class="pagination">
+          <li :class="{active: currentIndex === index}" v-for="(item, index) in countSize"><a href="#" @click="pageChange(index)">{{item}}<span class="sr-only">(current)</span></a></li>
+        </ul>
+      </nav>
+      <div class="alert alert-success col-sm-offset-3 col-sm-6" role="alert" v-show="success">
+        <a href="#" class="alert-link">留言成功</a>
+      </div>
+      <div class="alert alert-danger col-sm-offset-3 col-sm-6" role="alert" v-show="error">
+        <a href="#" class="alert-link">留言失败</a>
+      </div>
+      <div class="list-group col-sm-offset-3 col-sm-6" v-for="(item, index) in messageList" :key="index">
+        <a href="#" class="list-group-item active">
+          <h4 class="list-group-item-heading">【姓名】{{item.name}}</h4>
+          <p class="list-group-item-text">【留言】{{item.message}}</p>
+          <p>【时间】{{item.time}}</p>
+        </a>
+        
+        <a href="#" class="btn btn-text" @click="deleteMessage(item)">删除</a>
+      </div>
+    </form>
+  </div>
+
+<script>
+  new Vue({
+    el: '#message-board',
+    data: {
+      name: '',
+      message: '',
+      success: false,
+      successMsg: '',
+      errorMsg: '',
+      error: false,
+      messageList: [],
+      params: {
+        pageSize: 4,
+        page: 0
+      },
+      countSize: 8,
+      currentIndex: 0
+    },
+    methods: {
+      deleteMessage(item){
+        axios.post('/deleteMessage', {_id: item._id}).then(res => {
+          res = res.data
+          if(res.code === 1) {
+            this.getMessageList()
+            this.successMsg = res.msg
+            this.success = true
+            setTimeout(() => {
+              this.success = false
+              this.successMsg = ''
+            }, 1500)
+          }else{
+            this.errorMsg = res.msg
+            this.error = true
+            setTimeout(() => {
+              this.error = false
+              this.errorMsg = ''
+            }, 1500)
+          }
+        })
+      },
+      pageChange(index){
+        if(this.currentIndex === index) {
+          return
+        }
+        this.currentIndex = index
+        this.params.page = index
+        this.getMessageList()
+      },
+      getMessageList:function(){
+        axios.get('/du',{params: this.params}).then(res => {
+          res = res.data
+          if(res.code === 1) {
+            this.messageList = res.results
+            this.countSize = Math.ceil(res.count / 4)
+          }else{
+            this.errorMsg = res.msg
+            this.error = true
+            setTimeout(() => {
+              this.error = false
+              this.errorMsg = ''
+            }, 1500)
+          }
+        })
+      },
+      submit: function(){
+        axios.post('/submit', {name: this.name, message: this.message}).then(res => {
+          res = res.data
+          if(res.code === 1) {
+            this.getMessageList()
+            this.successMsg = res.msg
+            this.success = true
+            setTimeout(() => {
+              this.success = false
+              this.successMsg = ''
+            }, 1500)
+          } else {
+            this.errorMsg = res.msg
+            this.error = true
+            setTimeout(() => {
+              this.error = false
+              this.errorMsg = ''
+            }, 1500)
+          }
+        })
+      }
+    },
+    created: function(){
+      this.getMessageList()
+    }
+  })
+</script>
+</body>
+</html>
