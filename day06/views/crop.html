@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>裁剪</title>
+  <link rel="stylesheet" href="/css/crop.css">
+  <script src="/js/vue.min.js"></script>
+  <script src="/js/axios.min.js"></script>
+</head>
+<body>
+  <div id="crop">
+      <div class="img-wrapper">
+        <img src="/image/dog.jpg" ref="shadow" @load="load">
+        <div class="shadow" v-show="isCrop"></div>
+        <img src="/image/dog.jpg" alt="" class="crop-area" v-show="isCrop" :style="clip">
+        <div id="mainBox" v-show="isCrop" :style="cropPosition" @mousedown="selectDirection('', $event)">
+          <div class="mainBox left-up" @mousedown.stop="selectDirection('left-up', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox up" @mousedown.stop="selectDirection('up', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox right-up" @mousedown.stop="selectDirection('right-up', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox left" @mousedown.stop="selectDirection('left', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox right" @mousedown.stop="selectDirection('right', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox left-bottom" @mousedown.stop="selectDirection('left-bottom', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox bottom" @mousedown.stop="selectDirection('bottom', $event)" @mousemove="mousemove($event)"></div>
+          <div class="mainBox right-bottom" @mousedown.stop="selectDirection('right-bottom', $event)" @mousemove="mousemove($event)"></div>
+        </div>
+        <button type="button" class="btn" @click="isCrop = true">裁剪</button>
+        <button type="button" class="btn btn-right" @click="cropEnd" v-show="isCrop">裁剪完成</button>
+      </div>
+      <div class="img-wrapper">
+        <img src="/image/dog.jpg" alt="" class="crop-area" :style="clipPreview" v-show="isCrop">
+      </div>
+  </div>
+<script>
+  new Vue({
+    el: '#crop',
+    data: {
+      isCrop: false,
+      isKeyDown: false,
+      direction: '',
+      position: {
+        left: 125,
+        top: 125,
+        width: 150,
+        height: 150
+      },
+      parentX: 0,
+      parentY: 0,
+      parentHeight: 0,
+      parentWidth: 0,
+      initialEvent: null
+    },
+    computed: {
+      cropPosition(){
+        return {left: `${this.position.left}px`, top: `${this.position.top}px`, width: `${this.position.width}px`, height: `${this.position.height}px`}
+      },
+      clipPreview(){
+        let obj = {
+          clip: `rect(${this.position.top}px, ${this.position.left + this.position.width}px, ${this.position.top + this.position.height}px, ${this.position.left}px)`,
+          top: `-${this.position.top}px`,
+          left: `-${this.position.left}px`
+          }
+        return obj
+      },
+      clip(){
+        let obj = {
+          clip: `rect(${this.position.top}px, ${this.position.left + this.position.width}px, ${this.position.top + this.position.height}px, ${this.position.left}px)`
+          }
+        return obj
+        
+      }
+    },
+    methods: {
+      load(){
+        setTimeout(() => {
+          console.log(this.$refs.shadow)
+          // document.getElementById('#shadow').getboundingclientrect()
+          let rect = this.$refs.shadow.getBoundingClientRect()
+          this.parentX = rect.left
+          this.parentY = rect.top
+          this.parentWidth = rect.width
+          this.parentHeight = rect.height
+        }, 20)
+      },
+      moveCropAreaLeft(e){
+        this.position.left = this.leftCopy + (e.clientX - this.initialEvent.clientX)
+        if(this.position.left > this.parentWidth - this.position.width) {
+          this.position.left = this.parentWidth - this.position.width
+        }
+        if(this.position.left < 0) {
+          this.position.left = 0
+        }
+      },
+      moveCropAreaTop(e){
+        this.position.top = this.topCopy + (e.clientY - this.initialEvent.clientY)
+        if(this.position.top > this.parentHeight - this.position.height) {
+          this.position.top = this.parentHeight - this.position.height
+        }
+        if(this.position.top < 0) {
+          this.position.top = 0
+        }
+      },
+      mouseup(){
+        this.isKeyDown = false
+        this.initialEvent = null
+      },
+      moveBottom(e){
+        if(e.clientY <= this.parentY + this.position.top + 8 || e.clientY >= this.parentY + this.parentHeight) {
+          return
+        }
+        this.position.height = e.clientY - this.parentY - this.position.top
+      },
+      moveLeft(e){
+        if(e.clientX >= this.parentX + this.position.left + this.position.width - 8 || e.clientX <= this.parentX) {
+          return
+        }
+        this.position.left = e.clientX - this.parentX
+        this.position.width = this.widthCopy - (e.clientX - this.initialEvent.clientX)
+      },
+      moveTop(e){
+        if(e.clientY >= this.parentY + this.position.top + this.position.height - 8 || e.clientY <= this.parentY) {
+          return
+        }
+        this.position.top = e.clientY - this.parentY
+        this.position.height = this.HeightCopy - (e.clientY - this.initialEvent.clientY)
+      },
+      moveRight(e){
+        if(e.clientX - this.parentX - this.position.left <= 8 || e.clientX >= this.parentWidth + this.parentX) {
+          return
+        }
+        this.position.width = e.clientX - this.parentX - this.position.left
+      },
+      mousemove(e) {
+        if(!this.isKeyDown) {
+          return
+        }
+        switch (this.direction){
+          case 'left-up':
+            this.moveTop(e)
+            this.moveLeft(e)
+            break;
+          case 'up':
+            this.moveTop(e)
+            break;
+          case 'right-up':
+            this.moveTop(e)
+            this.moveRight(e)
+            break;
+          case 'left':
+            this.moveLeft(e)
+            break;
+          case 'right':
+            this.moveRight(e)
+            break;
+          case 'left-bottom':
+            this.moveBottom(e)
+            this.moveLeft(e)
+            break;
+          case 'bottom':
+            this.moveBottom(e)
+            break;
+          case 'right-bottom':
+            this.moveBottom(e)
+            this.moveRight(e)
+            break;
+          case '':
+            this.moveCropAreaLeft(e)
+            this.moveCropAreaTop(e)
+            break
+        }
+      },
+      selectDirection(direction, $event){
+        this.isKeyDown = true
+        this.direction = direction
+        this.widthCopy = this.position.width
+        this.HeightCopy = this.position.height
+        this.leftCopy = this.position.left
+        this.topCopy = this.position.top
+        this.initialEvent = $event
+        console.log(this.initialEvent)
+      },
+      cropEnd(){
+        this.isCrop = false
+        axios.post('/docut', this.position).then(res => {
+          res = res.data
+          alert(res.msg)
+        })
+      }
+    },
+    watch: {
+      position: {
+        handler(val, newVal) {
+
+        },
+        deep: true
+      }
+    },
+    created(){
+      window.addEventListener('mouseup', ()=>{
+        this.isKeyDown = false
+      })
+      window.addEventListener('mousemove', (e) => {
+        this.mousemove(e)
+      })
+    }
+  })
+</script>
+</body>
+</html>

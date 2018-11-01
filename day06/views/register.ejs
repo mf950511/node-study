@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>注册</title>
+  <!-- <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script> -->
+  <script src="/js/vue.min.js"></script>
+  <script src="/js/axios.min.js"></script>
+</head>
+<body>
+    <div id="register">
+      <p>用户名：<input type="text" v-model="params.username"></p>
+      <p>密码：<input type="password" v-model="params.password"></p>
+      <button type="button" @click="register">注册</button>
+    </div>
+
+<script>
+  new Vue({
+    el: "#register",
+    data: {
+      params: {
+        username: '',
+        password: ''
+      }
+    },
+    methods: {
+      register(){
+        axios.post('/doRegister',this.params).then(res => {
+          res = res.data
+          alert(res.msg)
+          console.log(res)
+        })
+      }
+    }
+  })
+</script>
+</body>
+</html>
