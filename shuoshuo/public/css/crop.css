@@ -1,0 +1,89 @@
+.img-wrapper{
+  width: 400px;
+  height: 400px;
+  float: left;
+  position: relative;
+}
+img, .shadow{
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+.shadow{
+  background:rgba(0, 0, 0, 0.5)
+}
+
+.btn{
+  position: absolute;
+  bottom: -50px;
+}
+.btn-right{
+  right: 20px;
+}
+#mainBox{
+  /* width: 150px;
+  height: 150px;
+  left: 125px;
+  top:125px; */
+  position: absolute;
+  border: 1px dashed white;
+  cursor: move;
+  box-sizing: border-box
+}
+.mainBox{
+  position: absolute;
+  height: 8px;
+  width: 8px;
+  background: #fff;
+}
+.left-up{
+  top: -4px;
+  left: -4px;
+  cursor: nw-resize;
+}
+.up{
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: n-resize;
+}
+.right-up{
+  top: -4px;
+  right: -4px;
+  cursor: ne-resize;
+}
+.left{
+  top:50%;
+  transform: translateY(-50%);
+  left: -4px;
+  cursor: w-resize;
+}
+.right{
+  top: 50%;
+  right: -4px;
+  transform: translateY(-50%);
+  cursor: w-resize;
+}
+.left-bottom{
+  bottom: -4px;
+  left: -4px;
+  cursor: sw-resize;
+}
+.bottom{
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: s-resize;
+}
+.right-bottom{
+  bottom: -4px;
+  right: -4px;
+  cursor: se-resize;
+}
+#mycanvas{
+  margin-left: 30px;
+}
