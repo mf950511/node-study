@@ -19,9 +19,13 @@ app.set('view engine', 'html')
 app.use(express.static('./public'))
 
 app.get('/',router.showIndex)
+app.get('/session', router.getSession)
 app.get('/register', router.showRegister)
 
 app.post('/doRegister', router.doRegister)
+app.get('/login', router.showLogin)
+
+app.post('/doLogin', router.doLogin)
 
 
 app.listen(3000)

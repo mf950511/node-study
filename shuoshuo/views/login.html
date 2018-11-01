@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>登陆</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- Custom styles for this template -->
+    <link href="/css/signin.css" rel="stylesheet">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    
+  </head>
+
+  <body>
+
+      <div class="container" id="register">
+
+        <form class="form-signin">
+          <h2 class="form-signin-heading">登陆</h2>
+          <label for="inputEmail" class="sr-only">username</label>
+          <input type="text" id="inputEmail" v-model="params.username" class="form-control" placeholder="username" required autofocus>
+          <label for="inputPassword" class="sr-only">Password</label>
+          <input type="password" id="inputPassword" v-model="params.password" class="form-control" placeholder="Password" required>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" value="remember-me" v-model="isRemember"> 记住密码
+            </label>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="button" @click="login">登陆</button>
+        </form>
+  
+      </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/vue.min.js"></script>
+    <script src="/js/axios.min.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+    new Vue({
+      el: '#register',
+      data: {
+        params: {
+          username: '',
+          password: ''
+        },
+        isRemember: false
+      },
+      methods: {
+        login(){
+          axios.post('/doLogin', this.params).then(res => {
+            res = res.data
+            if(res.code === 1) {
+              sessionStorage.setItem('username', res.result.username)
+              this.$message({
+                message: res.msg,
+                type: 'success',
+                duration: 1500,
+                onClose: function(){
+                  window.location.href="/"
+                }
+              });
+            } else {
+              this.$message({
+                message: res.msg,
+                duration: 1500,
+                type: 'error'
+              });
+            }
+          })
+        }
+      }
+    })
+  </script>
+  </body>
+</html>

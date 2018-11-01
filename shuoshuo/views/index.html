@@ -51,7 +51,7 @@
             <ul class="nav navbar-nav navbar-right">
               <li v-if="isLogin"><a href="#">欢迎您！{{username}}</a></li>
               <li v-if="isLogin"><a href="#">完善个人资料</a></li>
-              <li v-if="!isLogin"><a href="#">登陆</a></li>
+              <li v-if="!isLogin"><a href="/login">登陆</a></li>
               <li v-if="!isLogin"><a href="/register">注册</a></li>
             </ul>
           </div><!--/.navbar-collapse -->
@@ -114,11 +114,13 @@
         },
         methods: {
           getLogin(){
-            let username = sessionStorage.getItem('username')
-            this.isLogin = username ? true : false
-            if(this.isLogin) {
-              this.username = username
-            }
+            axios.get('/session').then(res => {
+              res = res.data
+              if(res.code === 1) {
+                this.isLogin = true
+                this.username = res.result.username
+              }
+            })
           }
         },
         mounted(){
