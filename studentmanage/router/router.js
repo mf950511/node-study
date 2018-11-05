@@ -1,4 +1,5 @@
 var Student = require('../models/Student.js')
+var KeCheng = require('../models/Kecheng')
 module.exports = {
   showIndex: function(req, res){
     Student.find({}, (err, result) => {
@@ -9,21 +10,31 @@ module.exports = {
     
   },
   showAdd: function(req, res){
-    res.render('add')
+    KeCheng.find({}, (err, result) => {
+      res.render('add', {
+        kecheng: result
+      })
+    })
+    
   },
   doAdd: function(req, res){
     req.query.sid = parseInt(req.query.sid)
     req.query.age = parseInt(req.query.age)
     Student.create(req.query, (err, result) => {
+      KeCheng.addStudent(req.query.kechengs, req.query.sid, () => {})
       res.redirect('/')
     })
   },
   showEdit: function(req, res){
     sid = parseInt(req.params.id)
     Student.findOne({sid}, (err, result) => {
-      res.render('edit', {
-        student: result
+      KeCheng.find({}, (err, result1) => {
+        res.render('edit', {
+          student: result,
+          kecheng: result1
+        })
       })
+      
     })
     
   },

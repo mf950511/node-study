@@ -3,7 +3,8 @@ var studentSchema = new mongoose.Schema({
   sid: Number,
   name: String,
   age: Number,
-  sex: String
+  sex: String,
+  kechengs: [Number]
 })
 studentSchema.index({sid: 1})
 var Student = mongoose.model('Student',studentSchema)
