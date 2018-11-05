@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>websocket</title>
+</head>
+<body>
+  <canvas id="canvas" width="1000" height="1000"></canvas>
+  <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var canvas = document.getElementById('canvas')
+    var ctx = canvas.getContext('2d')
+    var color = ['red', 'blue', 'black', 'pink', 'white']
+    var myColor = color[parseInt(Math.random() * color.length -1)]
+    canvas.onmousedown = function(){
+      canvas.addEventListener('mousemove', handler, true)
+    }
+    canvas.onmouseup = function(){
+      canvas.removeEventListener('mousemove', handler, true)
+    }
+    function handler(e){
+      ctx.beginPath()
+      ctx.arc(e.pageX, e.pageY, 20, 0, Math.PI * 2, true)
+      ctx.fillStyle = myColor
+      ctx.fill()
+      socket.emit('paint',{x: e.pageX, y: e.pageY, color: myColor})
+    }
+    var socket = io()
+
+    // document.getElementById('btn').onclick = function(){
+    //   socket.emit('ask', document.getElementById('value').value)
+    // }
+    
+    socket.on('paint', (msg) => {
+      ctx.beginPath()
+      ctx.arc(msg.x, msg.y, 20, 0, Math.PI * 2, true)
+      ctx.fillStyle = msg.color
+      ctx.fill()
+    })
+  </script>
+</body>
+</html>

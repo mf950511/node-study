@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>聊天室</title>
+  <style>
+    .operator{
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      height: 100px;
+      width: 100%;
+    }
+    .operator #content{
+      width: 100%;
+    }
+    .list li {
+      list-style: none;
+    }
+  </style>
+</head>
+<body>
+    <h1>小小聊天室<span id="user"><%= username %></span></h1>
+    <div>
+      <ul class="list"></ul>
+    </div>
+    <div class="operator">
+      <input type="text" id="content">
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script>
+      var socket = io()
+      $('#content').keydown(function(e){
+        if(e.keyCode === 13) {
+          socket.emit('chat', {
+            content: $('#content').val(),
+            username: $('#user').html()
+          })
+          $(this).val("")
+        }
+        
+      })
+      socket.on('chat', (msg) => {
+        $('.list').prepend('<li>' + msg.username + '说：' + msg.content + '</li>')
+      })
+    </script>
+</body>
+</html>
