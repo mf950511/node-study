@@ -10,6 +10,17 @@ function _connectDB(callback) {
   })
 }
 
+init()
+function init(){
+  _connectDB((err, db) => {
+    if(err) {
+      return
+    }
+    db.collection('users').createIndex({username: 1},  null, (err, result) => {
+    })
+  })
+}
+
 // 插入数据
 exports.insertOne = (collectionName, json, callback) => {
   _connectDB((err, db, client) => {

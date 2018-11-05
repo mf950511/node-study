@@ -87,3 +87,17 @@ img, .shadow{
 #mycanvas{
   margin-left: 30px;
 }
+
+.el-button{
+  margin-top: 20px;
+}
+.hidden .el-upload--picture-card{
+  display: none
+}
+.clear:after{
+  height: 0;
+  display: block;
+  content: '';
+  clear: both;
+  margin-bottom: 20px;
+}

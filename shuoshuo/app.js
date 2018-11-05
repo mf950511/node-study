@@ -17,15 +17,23 @@ app.engine('.html', ejs.__express)
 app.set('view engine', 'html')
 
 app.use(express.static('./public'))
+app.use('/avator', express.static('./avator'))
 
 app.get('/',router.showIndex)
 app.get('/session', router.getSession)
 app.get('/register', router.showRegister)
-
 app.post('/doRegister', router.doRegister)
-app.get('/login', router.showLogin)
 
+app.get('/login', router.showLogin)
 app.post('/doLogin', router.doLogin)
+
+app.get('/setAvator', router.showSetAvator)
+app.post('/setAvator', router.setAvator)
+
+app.post('/docut', router.docut)
+
+app.post('/postArticle', router.postArticle)
+app.get('/articleList', router.getArticleList)
 
 
 app.listen(3000)
